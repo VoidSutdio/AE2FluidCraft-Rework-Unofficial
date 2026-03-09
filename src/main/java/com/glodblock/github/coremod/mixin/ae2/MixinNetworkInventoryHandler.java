@@ -60,6 +60,8 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
     @Shadow
     protected abstract Deque<?> getDepth(Actionable type);
 
+    @Shadow @Final private SecurityCache security;
+
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(final IStorageChannel<?> chan, final SecurityCache security, final CallbackInfo ci) {
         monitor = security.getGrid().<IStorageGrid>getCache(IStorageGrid.class).getInventory(Util.getItemChannel());
@@ -68,14 +70,23 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
     @Inject(method = "injectItems", at = @At(value = "INVOKE", target = "Ljava/util/NavigableMap;values()Ljava/util/Collection;", ordinal = 1), cancellable = true)
     private void notItemInject(final T input, final Actionable mode, final IActionSource src, final CallbackInfoReturnable<T> cir) {
         if (input == null || input instanceof IAEItemStack) return;
-        if (src instanceof FakeMonitor.FakeMonitorSource || mode == Actionable.SIMULATE) return;
+        if (mode == Actionable.SIMULATE) return;
+        if (src instanceof FakeMonitor.FakeMonitorSource m) {
+            var o = m.machine();
+            if (o.isPresent()) {
+                var machine = o.get();
+                if (machine.getActionableNode().getGrid() == this.security.getGrid()) {
+                    return;
+                }
+            }
+        }
         final var drop = Util.packAEStackToDrop(input);
         if (drop != null) {
-            if (!this.getDepth(mode).isEmpty()) this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
+            if (!this.getDepth(mode).isEmpty()) this.surface(null, mode);
             cir.setReturnValue(FakeItemRegister.getAEStack(monitor.injectItems(drop, mode, src)));
             this.diveList((NetworkInventoryHandler<T>) (Object) this, mode);
         } else return;
-        this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
+        this.surface(null, mode);
     }
 
     @Inject(method = "injectItems", at = @At(value = "FIELD", target = "Lappeng/me/storage/NetworkInventoryHandler;priorityInventory:Ljava/util/NavigableMap;", opcode = Opcodes.GETFIELD), cancellable = true)
@@ -94,7 +105,7 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
             fakeInput.set(true);
             return;
         }
-        this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
+        this.surface(null, mode);
     }
 
     @Inject(method = "injectItems", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", ordinal = 2), cancellable = true)
@@ -113,32 +124,28 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
             fakeInput.set(true);
             return;
         }
-        this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
+        this.surface(null, mode);
     }
 
     @Inject(method = "extractItems", at = @At(value = "FIELD", target = "Lappeng/me/storage/NetworkInventoryHandler;priorityInventory:Ljava/util/NavigableMap;", opcode = Opcodes.GETFIELD), cancellable = true)
     public void extractItems(final T request, final Actionable mode, final IActionSource src, final CallbackInfoReturnable<T> cir) {
         if (request == null) return;
-        boolean work = false;
         if (request instanceof final IAEItemStack i) {
             if (i.getItem() == FCItems.FLUID_DROP) {
                 cir.setReturnValue((T) fluidMonitor.extractItems(i, mode, src));
-                work = true;
             } else if (ModAndClassUtil.GAS && i.getItem() == FCGasItems.GAS_DROP) {
                 cir.setReturnValue((T) gasMonitor.extractItems(i, mode, src));
-                work = true;
-            }
+            } else return;
         } else {
             if (src instanceof FakeMonitor.FakeMonitorSource || mode == Actionable.SIMULATE) return;
             final var drop = Util.packAEStackToDrop(request);
             if (drop != null) {
-                this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
+                this.surface(null, mode);
                 cir.setReturnValue(FakeItemRegister.getAEStack(monitor.extractItems(drop, mode, src)));
                 this.diveList((NetworkInventoryHandler<T>) (Object) this, mode);
-                work = true;
-            }
+            } else return;
         }
-        if (work) this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
+        this.surface(null, mode);
     }
 
     @Override
