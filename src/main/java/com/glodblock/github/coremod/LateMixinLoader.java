@@ -16,6 +16,7 @@ public class LateMixinLoader implements ILateMixinLoader {
     private static final Map<String, BooleanSupplier> MIXIN_CONFIGS = new Object2ObjectLinkedOpenHashMap<>();
 
     static {
+        addMixinCFG("mixins.ae2fc.json");
         addMixinCFG("mixins.ae2fc.packagedauto.json", () -> Loader.isModLoaded("packagedauto"));
         addMixinCFG("mixins.ae2fc.jei.json", () -> Loader.isModLoaded("jei"));
         addMixinCFG("mixins.ae2fc.wct.json", () -> Loader.isModLoaded("wct"));

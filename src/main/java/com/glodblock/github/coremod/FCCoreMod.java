@@ -18,10 +18,6 @@ public class FCCoreMod implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     private static final Map<String, BooleanSupplier> MIXIN_CONFIGS = new Object2ObjectLinkedOpenHashMap<>();
 
-    {
-        addMixinCFG("mixins.ae2fc.json");
-    }
-
     @Nullable
     @Override
     public String getModContainerClass() {
