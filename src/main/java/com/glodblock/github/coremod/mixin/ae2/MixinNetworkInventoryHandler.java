@@ -60,26 +60,15 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
     @Shadow
     protected abstract Deque<?> getDepth(Actionable type);
 
-    @Shadow @Final private SecurityCache security;
-
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(final IStorageChannel<?> chan, final SecurityCache security, final CallbackInfo ci) {
         monitor = security.getGrid().<IStorageGrid>getCache(IStorageGrid.class).getInventory(Util.getItemChannel());
     }
 
     @Inject(method = "injectItems", at = @At(value = "INVOKE", target = "Ljava/util/NavigableMap;values()Ljava/util/Collection;", ordinal = 1), cancellable = true)
-    private void notItemInject(final T input, final Actionable mode, final IActionSource src, final CallbackInfoReturnable<T> cir) {
+    private void notItemInject(final T input, final Actionable mode, IActionSource src, final CallbackInfoReturnable<T> cir) {
         if (input == null || input instanceof IAEItemStack) return;
-        if (mode == Actionable.SIMULATE) return;
-        if (src instanceof FakeMonitor.FakeMonitorSource m) {
-            var o = m.machine();
-            if (o.isPresent()) {
-                var machine = o.get();
-                if (machine.getActionableNode().getGrid() == this.security.getGrid()) {
-                    return;
-                }
-            }
-        }
+        if (mode == Actionable.SIMULATE || src instanceof FakeMonitor.FakeMonitorSource) return;
         final var drop = Util.packAEStackToDrop(input);
         if (drop != null) {
             if (!this.getDepth(mode).isEmpty()) this.surface(null, mode);
