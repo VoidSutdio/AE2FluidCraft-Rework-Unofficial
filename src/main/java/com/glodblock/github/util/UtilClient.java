@@ -193,7 +193,7 @@ public final class UtilClient {
                     if (item.isCraftable())
                         list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
                     gui.drawHoveringText(list, mouseX, mouseY);
-                    cacheTooltip.setLeft(item);
+                    cacheTooltip.setLeft(item.copy());
                     cacheTooltip.setRight(list);
                     cacheIsStorage = isStorage;
                     return true;
@@ -224,7 +224,7 @@ public final class UtilClient {
                     if (item.isCraftable())
                         list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
                     gui.drawHoveringText(list, mouseX, mouseY);
-                    cacheTooltip.setLeft(item);
+                    cacheTooltip.setLeft(item.copy());
                     cacheTooltip.setRight(list);
                     cacheIsStorage = isStorage;
                     return true;

@@ -10,11 +10,11 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.me.cache.SecurityCache;
 import appeng.me.storage.NetworkInventoryHandler;
+import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
-import com.glodblock.github.integration.mek.FCGasItems;
+import com.glodblock.github.integration.mek.FakeGases;
 import com.glodblock.github.interfaces.FCNetworkInventoryHandler;
 import com.glodblock.github.interfaces.FCNetworkMonitor;
-import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.util.FakeMonitor;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
@@ -82,9 +82,9 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
     private void injectItemsN(final T input, final Actionable mode, final IActionSource src, final CallbackInfoReturnable<T> cir, @Share("fc$fakeInput") final LocalBooleanRef fakeInput) {
         if (input == null || fakeInput.get() || !this.priorityInventory.isEmpty()) return;
         if (input instanceof final IAEItemStack i) {
-            if (i.getItem() == FCItems.FLUID_DROP) {
+            if (FakeFluids.isFluidFakeItem(i.getDefinition())) {
                 cir.setReturnValue((T) fluidMonitor.injectItems(i, mode, src));
-            } else if (ModAndClassUtil.GAS && i.getItem() == FCGasItems.GAS_DROP) {
+            } else if (ModAndClassUtil.GAS && FakeGases.isGasFakeItem(i.getDefinition())) {
                 cir.setReturnValue((T) gasMonitor.injectItems(i, mode, src));
             } else {
                 fakeInput.set(true);
@@ -101,9 +101,9 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
     private void injectItems(final T input, final Actionable mode, final IActionSource src, final CallbackInfoReturnable<T> cir, @Share("fc$fakeInput") final LocalBooleanRef fakeInput) {
         if (input == null || fakeInput.get()) return;
         if (input instanceof final IAEItemStack i) {
-            if (i.getItem() == FCItems.FLUID_DROP) {
+            if (FakeFluids.isFluidFakeItem(i.getDefinition())) {
                 cir.setReturnValue((T) fluidMonitor.injectItems(i, mode, src));
-            } else if (ModAndClassUtil.GAS && i.getItem() == FCGasItems.GAS_DROP) {
+            } else if (ModAndClassUtil.GAS && FakeGases.isGasFakeItem(i.getDefinition())) {
                 cir.setReturnValue((T) gasMonitor.injectItems(i, mode, src));
             } else {
                 fakeInput.set(true);
@@ -120,9 +120,9 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
     public void extractItems(final T request, final Actionable mode, final IActionSource src, final CallbackInfoReturnable<T> cir) {
         if (request == null) return;
         if (request instanceof final IAEItemStack i) {
-            if (i.getItem() == FCItems.FLUID_DROP) {
+            if (FakeFluids.isFluidFakeItem(i.getDefinition())) {
                 cir.setReturnValue((T) fluidMonitor.extractItems(i, mode, src));
-            } else if (ModAndClassUtil.GAS && i.getItem() == FCGasItems.GAS_DROP) {
+            } else if (ModAndClassUtil.GAS && FakeGases.isGasFakeItem(i.getDefinition())) {
                 cir.setReturnValue((T) gasMonitor.extractItems(i, mode, src));
             } else return;
         } else {
