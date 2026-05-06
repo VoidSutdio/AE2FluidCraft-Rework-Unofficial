@@ -36,15 +36,11 @@ public class FCJeiPlugin implements IModPlugin {
     @Override
     public void register(@Nonnull final IModRegistry registry) {
         registry.getRecipeTransferRegistry().addRecipeTransferHandler(
-                new FluidPatternEncoderRecipeTransferHandler(), Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
-        registry.getRecipeTransferRegistry().addRecipeTransferHandler(
                 new FluidPatternTerminalRecipeTransferHandler(), Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
         registry.getRecipeTransferRegistry().addRecipeTransferHandler(
                 new WirelessFluidPatternTerminalRecipeTransferHandler(), Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
         registry.getRecipeTransferRegistry().addRecipeTransferHandler(
                 new ExtendedFluidPatternTerminalRecipeTransferHandler(), Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
-        registry.getRecipeTransferRegistry().addRecipeTransferHandler(
-                new UltimateEncoderRecipeTransferHandler(), Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
         if (ModAndClassUtil.DY) {
             registry.addRecipeRegistryPlugin(FluidPatternPlugin.INSTANCE);
             registry.addRecipeCatalyst(new ItemStack(ItemHelper.AE2.INTERFACE), FluidPatternCategory.UID);

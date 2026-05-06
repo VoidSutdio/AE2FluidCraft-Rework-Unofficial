@@ -143,7 +143,7 @@ public class CPacketInventoryAction implements IMessage {
                                 if (sender.openContainer instanceof final ContainerFCCraftConfirm ccc) {
                                     ccc.setAutoStart(message.slot == 1);
                                     ccc.setJob(futureJob);
-                                    cca.detectAndSendChanges();
+                                    ccc.detectAndSendChanges();
                                 }
                             } catch (final Throwable e) {
                                 if (futureJob != null) {

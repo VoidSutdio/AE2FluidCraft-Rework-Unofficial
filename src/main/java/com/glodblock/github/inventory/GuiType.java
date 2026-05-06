@@ -24,17 +24,14 @@ import com.glodblock.github.client.GuiFluidAssembler;
 import com.glodblock.github.client.GuiFluidDualInterface;
 import com.glodblock.github.client.GuiFluidExportBus;
 import com.glodblock.github.client.GuiFluidPacketDecoder;
-import com.glodblock.github.client.GuiFluidPatternEncoder;
 import com.glodblock.github.client.GuiFluidPatternTerminalCraftingStatus;
 import com.glodblock.github.client.GuiGeneralLevelMaintainer;
 import com.glodblock.github.client.GuiIngredientBuffer;
 import com.glodblock.github.client.GuiItemAmountChange;
 import com.glodblock.github.client.GuiItemDualInterface;
 import com.glodblock.github.client.GuiLargeIngredientBuffer;
-import com.glodblock.github.client.GuiUltimateEncoder;
 import com.glodblock.github.client.client.gui.GuiExtendedFluidPatternTerminal;
 import com.glodblock.github.client.client.gui.GuiFluidPatternTerminal;
-import com.glodblock.github.client.client.gui.GuiWirelessFluidPatternTerminal;
 import com.glodblock.github.client.container.ContainerBurette;
 import com.glodblock.github.client.container.ContainerExtendedFluidPatternTerminal;
 import com.glodblock.github.client.container.ContainerFCCraftConfirm;
@@ -42,24 +39,19 @@ import com.glodblock.github.client.container.ContainerFluidAssembler;
 import com.glodblock.github.client.container.ContainerFluidDualInterface;
 import com.glodblock.github.client.container.ContainerFluidExportBus;
 import com.glodblock.github.client.container.ContainerFluidPacketDecoder;
-import com.glodblock.github.client.container.ContainerFluidPatternEncoder;
 import com.glodblock.github.client.container.ContainerFluidPatternTerminal;
 import com.glodblock.github.client.container.ContainerGeneralLevelMaintainer;
 import com.glodblock.github.client.container.ContainerIngredientBuffer;
 import com.glodblock.github.client.container.ContainerItemAmountChange;
 import com.glodblock.github.client.container.ContainerItemDualInterface;
 import com.glodblock.github.client.container.ContainerLargeIngredientBuffer;
-import com.glodblock.github.client.container.ContainerUltimateEncoder;
-import com.glodblock.github.client.container.ContainerWirelessFluidPatternTerminal;
 import com.glodblock.github.common.part.PartFluidExportBus;
 import com.glodblock.github.common.tile.TileBurette;
 import com.glodblock.github.common.tile.TileFluidAssembler;
 import com.glodblock.github.common.tile.TileFluidPacketDecoder;
-import com.glodblock.github.common.tile.TileFluidPatternEncoder;
 import com.glodblock.github.common.tile.TileGeneralLevelMaintainer;
 import com.glodblock.github.common.tile.TileIngredientBuffer;
 import com.glodblock.github.common.tile.TileLargeIngredientBuffer;
-import com.glodblock.github.common.tile.TileUltimateEncoder;
 import com.glodblock.github.integration.mek.MekGuiType;
 import com.glodblock.github.interfaces.FCPriorityHost;
 import com.google.common.collect.ImmutableList;
@@ -79,18 +71,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public enum GuiType {
-
-    ULTIMATE_ENCODER(new TileGuiFactory<>(TileUltimateEncoder.class) {
-        @Override
-        protected Object createServerGui(final EntityPlayer player, final TileUltimateEncoder inv) {
-            return new ContainerUltimateEncoder(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(final EntityPlayer player, final TileUltimateEncoder inv) {
-            return new GuiUltimateEncoder(player.inventory, inv);
-        }
-    }),
 
     FLUID_ASSEMBLER(new TileGuiFactory<>(TileFluidAssembler.class) {
         @Override
@@ -161,18 +141,6 @@ public enum GuiType {
         @Override
         protected Object createClientGui(final EntityPlayer player, final TileLargeIngredientBuffer inv) {
             return new GuiLargeIngredientBuffer(player.inventory, inv);
-        }
-    }),
-
-    FLUID_PATTERN_ENCODER(new TileGuiFactory<>(TileFluidPatternEncoder.class) {
-        @Override
-        protected Object createServerGui(final EntityPlayer player, final TileFluidPatternEncoder inv) {
-            return new ContainerFluidPatternEncoder(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(final EntityPlayer player, final TileFluidPatternEncoder inv) {
-            return new GuiFluidPatternEncoder(player.inventory, inv);
         }
     }),
 
@@ -261,18 +229,6 @@ public enum GuiType {
         @Override
         protected Object createClientGui(final EntityPlayer player, final ITerminalHost inv) {
             return new GuiExtendedFluidPatternTerminal(player.inventory, inv);
-        }
-    }),
-
-    WIRELESS_FLUID_PATTERN_TERMINAL(new ItemGuiFactory<>(WirelessTerminalGuiObject.class) {
-        @Override
-        protected Object createServerGui(final EntityPlayer player, final WirelessTerminalGuiObject inv) {
-            return new ContainerWirelessFluidPatternTerminal(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(final EntityPlayer player, final WirelessTerminalGuiObject inv) {
-            return new GuiWirelessFluidPatternTerminal(player.inventory, inv);
         }
     }),
 

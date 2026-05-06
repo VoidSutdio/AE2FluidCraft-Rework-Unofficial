@@ -12,12 +12,10 @@ import com.glodblock.github.common.tile.TileBurette;
 import com.glodblock.github.common.tile.TileDualInterface;
 import com.glodblock.github.common.tile.TileFluidAssembler;
 import com.glodblock.github.common.tile.TileFluidPacketDecoder;
-import com.glodblock.github.common.tile.TileFluidPatternEncoder;
 import com.glodblock.github.common.tile.TileGeneralLevelMaintainer;
 import com.glodblock.github.common.tile.TileIngredientBuffer;
 import com.glodblock.github.common.tile.TileLargeIngredientBuffer;
 import com.glodblock.github.common.tile.TileTrioInterface;
-import com.glodblock.github.common.tile.TileUltimateEncoder;
 import com.glodblock.github.handler.RegistryHandler;
 import com.glodblock.github.integration.mek.FCGasBlocks;
 import com.glodblock.github.integration.mek.FCGasItems;
@@ -66,7 +64,6 @@ public class CommonProxy {
             FCGasBlocks.init(regHandler);
             FakeGases.init();
         }
-        GameRegistry.registerTileEntity(TileFluidPatternEncoder.class, FluidCraft.resource(NameConst.BLOCK_FLUID_PATTERN_ENCODER));
         GameRegistry.registerTileEntity(TileFluidPacketDecoder.class, FluidCraft.resource(NameConst.BLOCK_FLUID_PACKET_DECODER));
         GameRegistry.registerTileEntity(TileIngredientBuffer.class, FluidCraft.resource(NameConst.BLOCK_INGREDIENT_BUFFER));
         GameRegistry.registerTileEntity(TileLargeIngredientBuffer.class, FluidCraft.resource(NameConst.BLOCK_LARGE_INGREDIENT_BUFFER));
@@ -74,7 +71,6 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(TileDualInterface.class, FluidCraft.resource(NameConst.BLOCK_DUAL_INTERFACE));
         GameRegistry.registerTileEntity(TileGeneralLevelMaintainer.class, FluidCraft.resource(NameConst.BLOCK_GENERAL_LEVEL_MAINTAINER));
         GameRegistry.registerTileEntity(TileFluidAssembler.class, FluidCraft.resource(NameConst.BLOCK_FLUID_ASSEMBLER));
-        GameRegistry.registerTileEntity(TileUltimateEncoder.class, FluidCraft.resource(NameConst.BLOCK_ULTIMATE_ENCODER));
         if (ModAndClassUtil.GAS) {
             GameRegistry.registerTileEntity(TileTrioInterface.class, FluidCraft.resource(NameConst.BLOCK_TRIO_INTERFACE));
         }
@@ -93,7 +89,6 @@ public class CommonProxy {
 
     public void init(final FMLInitializationEvent event) {
         regHandler.onInit();
-        AEApi.instance().registries().wireless().registerWirelessHandler(FCItems.WIRELESS_FLUID_PATTERN_TERMINAL);
         final IRecipe disassembleRecipe = ForgeRegistries.RECIPES.getValue(new ResourceLocation(AppEng.MOD_ID, "disassemble"));
         if (disassembleRecipe instanceof DisassembleRecipe) {
             Ae2Reflect.getDisassemblyNonCellMap((DisassembleRecipe) disassembleRecipe).put(
@@ -116,7 +111,6 @@ public class CommonProxy {
         Upgrades.CRAFTING.registerItem(new ItemStack(FCItems.PART_DUAL_INTERFACE), 1);
         Upgrades.CRAFTING.registerItem(new ItemStack(FCItems.PART_DUAL_INTERFACE), 2);
         Upgrades.CRAFTING.registerItem(AEApi.instance().definitions().parts().fluidExportBus(), 1);
-        Upgrades.MAGNET.registerItem(new ItemStack(FCItems.WIRELESS_FLUID_PATTERN_TERMINAL), 1);
         if (ModAndClassUtil.GAS) {
             GasInterfaceUtil.addUpgrade();
         }

@@ -14,8 +14,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FluidCraftingPatternDetails implements ICraftingPatternDetails, Comparable<ICraftingPatternDetails> {
 
@@ -127,6 +131,27 @@ public class FluidCraftingPatternDetails implements ICraftingPatternDetails, Com
     @Override
     public boolean canSubstitute() {
         return canSubstitute;
+    }
+
+    @Override
+    public List<IAEItemStack> getSubstituteInputs(final int slotIndex) {
+        if (!this.canSubstitute || slotIndex < 0 || slotIndex >= this.fluidInputs.length) {
+            return Collections.emptyList();
+        }
+
+        final IAEItemStack input = this.fluidInputs[slotIndex];
+        if (input == null || input.getDefinition().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final List<IAEItemStack> substitutes = new ArrayList<>(1);
+        substitutes.add(input.copy());
+        return substitutes;
+    }
+
+    @Override
+    public Set<IAEItemStack> getSubstituteInputsSet(final int slotIndex) {
+        return new HashSet<>(getSubstituteInputs(slotIndex));
     }
 
     @Override

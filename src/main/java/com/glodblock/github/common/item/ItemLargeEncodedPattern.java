@@ -36,13 +36,4 @@ public class ItemLargeEncodedPattern extends ItemEncodedPattern implements HasCu
         return NameConst.MODEL_LARGE_ITEM_ENCODED_PATTERN;
     }
 
-    @Override
-    public void addCheckedInformation(final ItemStack stack, final World world, final List<String> lines, final ITooltipFlag advancedTooltips) {
-        super.addCheckedInformation(stack, world, lines, advancedTooltips);
-        final NBTTagCompound tag = stack.getTagCompound();
-        if (tag != null && tag.hasKey("encoderName")) {
-            lines.add(I18n.format("ae2fc.tooltip.pattern_encoder.name", tag.getString("encoderName")));
-        }
-    }
-
 }

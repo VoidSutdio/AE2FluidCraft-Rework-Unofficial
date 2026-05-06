@@ -53,11 +53,11 @@ public class GuiFluidPatternTerminal extends GuiPatternTerm {
         super.initGui();
         craftingStatusBtn = Ae2ReflectClient.getCraftingStatusButton(this);
         if (!ModAndClassUtil.NEE) {
-            this.combineEnableBtn = new GuiFCImgButton(this.guiLeft + 84, this.guiTop + this.ySize - 163, "FORCE_COMBINE", "DO_COMBINE");
+            this.combineEnableBtn = new GuiFCImgButton(this.guiLeft + 84, this.guiTop + this.ySize - 153, "FORCE_COMBINE", "DO_COMBINE");
             this.combineEnableBtn.setHalfSize(true);
             this.buttonList.add(this.combineEnableBtn);
 
-            this.combineDisableBtn = new GuiFCImgButton(this.guiLeft + 84, this.guiTop + this.ySize - 163, "NOT_COMBINE", "DONT_COMBINE");
+            this.combineDisableBtn = new GuiFCImgButton(this.guiLeft + 84, this.guiTop + this.ySize - 153, "NOT_COMBINE", "DONT_COMBINE");
             this.combineDisableBtn.setHalfSize(true);
             this.buttonList.add(this.combineDisableBtn);
         }

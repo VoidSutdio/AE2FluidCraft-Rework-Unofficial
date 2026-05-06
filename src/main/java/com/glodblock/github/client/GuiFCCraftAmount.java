@@ -4,14 +4,9 @@ import appeng.api.storage.ITerminalHost;
 import appeng.client.gui.MathExpressionParser;
 import appeng.client.gui.implementations.GuiCraftAmount;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.container.AEBaseContainer;
-import appeng.helpers.WirelessTerminalGuiObject;
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.common.part.PartExtendedFluidPatternTerminal;
-import com.glodblock.github.common.part.PartFluidPatternTerminal;
 import com.glodblock.github.inventory.GuiType;
 import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.util.Ae2ReflectClient;
 import net.minecraft.client.gui.GuiButton;
@@ -36,22 +31,6 @@ public class GuiFCCraftAmount extends GuiCraftAmount {
         this.originalGuiBtn = Ae2ReflectClient.getGuiCraftAmountBackButton(this);
         this.next = Ae2ReflectClient.getGuiCraftAmountNextButton(this);
         ItemStack icon = ItemStack.EMPTY;
-        final Object te = ((AEBaseContainer)this.inventorySlots).getTarget();
-        if (te instanceof WirelessTerminalGuiObject) {
-            final ItemStack tool = ((WirelessTerminalGuiObject) te).getItemStack();
-            if (tool.getItem() == FCItems.WIRELESS_FLUID_PATTERN_TERMINAL) {
-                icon = new ItemStack(FCItems.WIRELESS_FLUID_PATTERN_TERMINAL, 1);
-                this.originGui = GuiType.WIRELESS_FLUID_PATTERN_TERMINAL;
-            }
-        }
-        if (te instanceof PartFluidPatternTerminal) {
-            icon = new ItemStack(FCItems.PART_FLUID_PATTERN_TERMINAL, 1);
-            this.originGui = GuiType.FLUID_PATTERN_TERMINAL;
-        }
-        if (te instanceof PartExtendedFluidPatternTerminal) {
-            icon = new ItemStack(FCItems.PART_EXTENDED_FLUID_PATTERN_TERMINAL, 1);
-            this.originGui = GuiType.FLUID_EXTENDED_PATTERN_TERMINAL;
-        }
         if (!icon.isEmpty() && this.originGui != null) {
             this.buttonList.remove(this.originalGuiBtn);
             this.buttonList.add(this.originalGuiBtn = new GuiTabButton(this.guiLeft + 154, this.guiTop, icon, icon.getDisplayName(), this.itemRender));

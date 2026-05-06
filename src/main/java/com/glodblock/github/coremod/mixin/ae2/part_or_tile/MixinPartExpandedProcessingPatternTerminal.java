@@ -18,6 +18,9 @@ import net.minecraftforge.items.IItemHandler;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
@@ -55,18 +58,16 @@ public abstract class MixinPartExpandedProcessingPatternTerminal extends Abstrac
         Util.onPatternTerminalChangeCrafting(this, true, inputs, outputs, combine);
     }
 
-    @Intrinsic
-    public void readFromNBT(final NBTTagCompound data) {
-        super.writeToNBT(data);
-        fc$combine = data.getBoolean("combineMode");
-        fc$fluidFirst = data.getBoolean("fluidFirst");
+    @Inject(method = "readFromNBT", at = @At("TAIL"))
+    private void fc$readFromNBT(NBTTagCompound data, CallbackInfo ci) {
+        this.fc$combine = data.getBoolean("combineMode");
+        this.fc$fluidFirst = data.getBoolean("fluidFirst");
     }
 
-    @Intrinsic
-    public void writeToNBT(final NBTTagCompound data) {
-        super.writeToNBT(data);
-        data.setBoolean("combineMode", fc$combine);
-        data.setBoolean("fluidFirst", fc$fluidFirst);
+    @Inject(method = "writeToNBT", at = @At("TAIL"))
+    private void fc$writeToNBT(NBTTagCompound data, CallbackInfo ci) {
+        data.setBoolean("combineMode", this.fc$combine);
+        data.setBoolean("fluidFirst", this.fc$fluidFirst);
     }
 
     @Intrinsic

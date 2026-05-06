@@ -129,6 +129,7 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
     private void encodeFluidPattern() {
         final ItemStack patternStack = new ItemStack(FCItems.DENSE_ENCODED_PATTERN);
         final FluidPatternDetails pattern = new FluidPatternDetails(patternStack);
+        pattern.setCanSubstitute(this.substitute);
         pattern.setInputs(collectInventory(craftingSlots));
         pattern.setOutputs(collectInventory(outputSlots));
         patternSlotOUT.putStack(pattern.writeToStack());
@@ -248,7 +249,7 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
     @Override
     public void saveChanges() {
         super.saveChanges();
-        if (Platform.isServer()) {
+        if (Platform.isServer() && this.wirelessTerminalGUIObject != null) {
             final NBTTagCompound tag = new NBTTagCompound();
             tag.setBoolean("combine", this.combine);
             tag.setBoolean("fluidFirst", this.fluidFirst);

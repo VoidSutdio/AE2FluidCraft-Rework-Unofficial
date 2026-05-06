@@ -9,6 +9,7 @@ import appeng.container.implementations.ContainerPatternTerm;
 import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.container.slot.SlotPatternOutputs;
 import appeng.helpers.InventoryAction;
+import appeng.parts.reporting.AbstractPartEncoder;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import com.glodblock.github.common.item.ItemFluidCraftEncodedPattern;
@@ -195,6 +196,7 @@ public class ContainerFluidPatternTerminal extends ContainerPatternTerm implemen
     private void encodeFluidPattern() {
         final ItemStack patternStack = new ItemStack(FCItems.DENSE_ENCODED_PATTERN);
         final FluidPatternDetails pattern = new FluidPatternDetails(patternStack);
+        pattern.setCanSubstitute(this.substitute);
         pattern.setInputs(collectInventory(craftingSlots));
         pattern.setOutputs(collectInventory(outputSlots));
         pattern.setEncoder(this.getInventoryPlayer().player.getGameProfile());
@@ -246,9 +248,8 @@ public class ContainerFluidPatternTerminal extends ContainerPatternTerm implemen
 
     @Override
     public void acceptPattern(final Int2ObjectMap<ItemStack[]> inputs, final List<ItemStack> outputs, final boolean combine) {
-        if (this.getPart() instanceof final FCFluidPatternPart p) {
-            p.onChangeCrafting(inputs, outputs, combine);
-        }
+        final AbstractPartEncoder encoderPart = this.getPart();
+        Util.onPatternTerminalChangeCrafting(encoderPart, this, !this.craftingMode, inputs, outputs, combine);
     }
 
     @Override

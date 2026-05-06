@@ -71,8 +71,8 @@ import java.util.Optional;
 public class CoreModHooks {
 
     public static InventoryCrafting wrapCraftingBuffer(final Container container, final int width, final int height) {
-        final int s = width > 3 ? 10 : 3;
-        return new FluidConvertingInventoryCrafting(container, width, height);
+        final int size = width > 3 || height > 3 ? 10 : 3;
+        return new FluidConvertingInventoryCrafting(container, size, size);
     }
 
     public static IAEItemStack wrapFluidPacketStack(final IAEItemStack stack) {
@@ -255,13 +255,6 @@ public class CoreModHooks {
             return false;
         }
         final IActionHost ah = container.getActionHost();
-
-        if (ah instanceof WirelessTerminalGuiObject) {
-            final ItemStack tool = ((WirelessTerminalGuiObject) ah).getItemStack();
-            if (tool.getItem() == FCItems.WIRELESS_FLUID_PATTERN_TERMINAL) {
-                originalGui = GuiType.WIRELESS_FLUID_PATTERN_TERMINAL;
-            }
-        }
 
         if (ah instanceof PartFluidPatternTerminal) {
             originalGui = GuiType.FLUID_PATTERN_TERMINAL;

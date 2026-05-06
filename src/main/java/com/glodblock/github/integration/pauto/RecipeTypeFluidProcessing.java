@@ -2,7 +2,7 @@ package com.glodblock.github.integration.pauto;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.fake.FakeFluids;
-import com.glodblock.github.loader.FCBlocks;
+import com.glodblock.github.loader.FCItems;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -90,7 +90,7 @@ public class RecipeTypeFluidProcessing implements IRecipeType {
     @SideOnly(Side.CLIENT)
     @Override
     public Object getRepresentation() {
-        return new ItemStack(FCBlocks.FLUID_PATTERN_ENCODER);
+        return new ItemStack(FCItems.DENSE_ENCODED_PATTERN);
     }
 
     @SideOnly(Side.CLIENT)

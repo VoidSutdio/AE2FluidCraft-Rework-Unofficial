@@ -6,15 +6,9 @@ import appeng.client.gui.widgets.GuiTabButton;
 import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.parts.reporting.PartExpandedProcessingPatternTerminal;
 import appeng.parts.reporting.PartPatternTerminal;
-import com.glodblock.github.common.part.PartExtendedFluidPatternTerminal;
-import com.glodblock.github.common.part.PartFluidPatternTerminal;
-import com.glodblock.github.inventory.GuiType;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.util.Ae2ReflectClient;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 
 import java.io.IOException;
 
@@ -26,18 +20,6 @@ public class GuiFluidPatternTerminalCraftingStatus extends GuiCraftingStatus {
     public GuiFluidPatternTerminalCraftingStatus(final InventoryPlayer inventoryPlayer, final ITerminalHost te) {
         super(inventoryPlayer, te);
         this.part = te;
-        if (te instanceof WirelessTerminalGuiObject) {
-            final ItemStack tool = ((WirelessTerminalGuiObject) te).getItemStack();
-            if (tool.getItem() == FCItems.WIRELESS_FLUID_PATTERN_TERMINAL) {
-                Ae2ReflectClient.setIconItem(this, new ItemStack(FCItems.WIRELESS_FLUID_PATTERN_TERMINAL));
-            }
-        }
-        if (te instanceof PartFluidPatternTerminal) {
-            Ae2ReflectClient.setIconItem(this, new ItemStack(FCItems.PART_FLUID_PATTERN_TERMINAL));
-        }
-        if (te instanceof PartExtendedFluidPatternTerminal) {
-            Ae2ReflectClient.setIconItem(this, new ItemStack(FCItems.PART_EXTENDED_FLUID_PATTERN_TERMINAL));
-        }
     }
 
     @Override
@@ -49,16 +31,9 @@ public class GuiFluidPatternTerminalCraftingStatus extends GuiCraftingStatus {
     @Override
     protected void actionPerformed(final GuiButton btn) throws IOException {
         if (btn == originalGuiBtn) {
-            if (part instanceof WirelessTerminalGuiObject) {
-                final ItemStack tool = ((WirelessTerminalGuiObject) part).getItemStack();
-                if (tool.getItem() == FCItems.WIRELESS_FLUID_PATTERN_TERMINAL) {
-                    InventoryHandler.switchGui(GuiType.WIRELESS_FLUID_PATTERN_TERMINAL);
-                } else super.actionPerformed(btn);
-            } else if (part instanceof PartFluidPatternTerminal)
-                InventoryHandler.switchGui(GuiType.FLUID_PATTERN_TERMINAL);
-            else if (part instanceof PartExtendedFluidPatternTerminal)
-                InventoryHandler.switchGui(GuiType.FLUID_EXTENDED_PATTERN_TERMINAL);
-            else if (part instanceof PartPatternTerminal || part instanceof PartExpandedProcessingPatternTerminal) {
+            if (part instanceof PartPatternTerminal
+                    || part instanceof PartExpandedProcessingPatternTerminal
+                    || part instanceof WirelessTerminalGuiObject) {
                 super.actionPerformed(btn);
             }
         } else {

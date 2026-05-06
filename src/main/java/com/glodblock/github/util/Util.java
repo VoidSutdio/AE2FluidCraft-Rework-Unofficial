@@ -10,6 +10,7 @@ import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
+import appeng.container.implementations.ContainerPatternEncoder;
 import appeng.core.localization.PlayerMessages;
 import appeng.fluids.util.AEFluidInventory;
 import appeng.fluids.util.AEFluidStack;
@@ -27,6 +28,7 @@ import com.mekeng.github.common.me.data.IAEGasStack;
 import com.mekeng.github.common.me.storage.IGasStorageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.EncoderException;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -53,7 +55,9 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -378,23 +382,21 @@ public final class Util {
     }
 
     public static void onPatternTerminalChangeCrafting(final AbstractPartEncoder part, final boolean noCraftingMode, final Int2ObjectMap<ItemStack[]> inputs, final List<ItemStack> outputs, final boolean combine) {
+        onPatternTerminalChangeCrafting(part, null, noCraftingMode, inputs, outputs, combine);
+    }
+
+    public static void onPatternTerminalChangeCrafting(final AbstractPartEncoder part, @Nullable final ContainerPatternEncoder encoder, final boolean noCraftingMode, final Int2ObjectMap<ItemStack[]> inputs, final List<ItemStack> outputs, final boolean combine) {
         final IItemHandler crafting = part.getInventoryByName("crafting");
         final IItemHandler output = part.getInventoryByName("output");
         final IItemList<IAEItemStack> storageList = part.getInventory(getItemChannel()) == null ?
-            null : part.getInventory(getItemChannel()).getStorageList();
+                null : part.getInventory(getItemChannel()).getStorageList();
+        final PatternInputResult inputResult = buildPatternInputResult(inputs, storageList, combine && noCraftingMode);
         if (crafting instanceof AppEngInternalInventory && output instanceof AppEngInternalInventory) {
             clearItemInventory((IItemHandlerModifiable) crafting);
             clearItemInventory((IItemHandlerModifiable) output);
-            ItemStack[] fuzzyFind = new ItemStack[findMax(inputs.keySet()) + 1];
-            for (final int index : inputs.keySet()) {
-                fuzzyTransferItems(index, inputs.get(index), fuzzyFind, storageList);
-            }
-            if (combine && noCraftingMode) {
-                fuzzyFind = compress(fuzzyFind);
-            }
-            int bound = Math.min(crafting.getSlots(), fuzzyFind.length);
+            int bound = Math.min(crafting.getSlots(), inputResult.loadedInputs.length);
             for (int x = 0; x < bound; ++x) {
-                final ItemStack item = fuzzyFind[x];
+                final ItemStack item = inputResult.loadedInputs[x];
                 ((AppEngInternalInventory) crafting).setStackInSlot(x, item == null ? ItemStack.EMPTY : item);
             }
             bound = Math.min(output.getSlots(), outputs.size());
@@ -402,6 +404,144 @@ public final class Util {
                 final ItemStack item = outputs.get(x);
                 ((AppEngInternalInventory) output).setStackInSlot(x, item == null ? ItemStack.EMPTY : item);
             }
+        }
+        applyProcessingSubstituteOptions(encoder, inputResult.substituteInputs);
+    }
+
+    private static PatternInputResult buildPatternInputResult(final Int2ObjectMap<ItemStack[]> inputs, @Nullable final IItemList<IAEItemStack> storageList, final boolean combine) {
+        if (inputs == null || inputs.isEmpty()) {
+            return new PatternInputResult(new ItemStack[0], new Int2ObjectArrayMap<>());
+        }
+
+        final ItemStack[] selectedInputs = new ItemStack[findMax(inputs.keySet()) + 1];
+        final Int2ObjectMap<ItemStack[]> optionsByOriginalSlot = new Int2ObjectArrayMap<>();
+
+        for (final int index : inputs.keySet()) {
+            fuzzyTransferItems(index, inputs.get(index), selectedInputs, storageList);
+
+            final ItemStack[] sanitizedOptions = sanitizePatternOptions(inputs.get(index));
+            if (sanitizedOptions.length > 0) {
+                optionsByOriginalSlot.put(index, sanitizedOptions);
+            }
+        }
+
+        if (combine) {
+            return combinePatternInputs(selectedInputs, optionsByOriginalSlot);
+        }
+
+        final Int2ObjectMap<ItemStack[]> optionsByAppliedSlot = new Int2ObjectArrayMap<>();
+        for (final int index : optionsByOriginalSlot.keySet()) {
+            if (index >= 0 && index < selectedInputs.length) {
+                final ItemStack selected = selectedInputs[index];
+                if (selected != null && !selected.isEmpty()) {
+                    optionsByAppliedSlot.put(index, optionsByOriginalSlot.get(index));
+                }
+            }
+        }
+
+        return new PatternInputResult(selectedInputs, optionsByAppliedSlot);
+    }
+
+    private static PatternInputResult combinePatternInputs(final ItemStack[] selectedInputs, final Int2ObjectMap<ItemStack[]> optionsByOriginalSlot) {
+        final List<ItemStack> combinedInputs = new ArrayList<>();
+        final List<List<ItemStack>> combinedOptions = new ArrayList<>();
+
+        for (int slot = 0; slot < selectedInputs.length; slot++) {
+            final ItemStack selected = selectedInputs[slot];
+            if (selected == null || selected.isEmpty()) {
+                continue;
+            }
+
+            int matchedIndex = -1;
+            for (int i = 0; i < combinedInputs.size(); i++) {
+                if (canMergeStacks(combinedInputs.get(i), selected)) {
+                    matchedIndex = i;
+                    break;
+                }
+            }
+
+            if (matchedIndex >= 0) {
+                combinedInputs.get(matchedIndex).grow(selected.getCount());
+                appendPatternOptions(combinedOptions.get(matchedIndex), optionsByOriginalSlot.get(slot));
+            } else {
+                combinedInputs.add(selected.copy());
+                final List<ItemStack> options = new ArrayList<>();
+                appendPatternOptions(options, optionsByOriginalSlot.get(slot));
+                combinedOptions.add(options);
+            }
+        }
+
+        final Int2ObjectMap<ItemStack[]> optionsByCombinedSlot = new Int2ObjectArrayMap<>();
+        for (int slot = 0; slot < combinedOptions.size(); slot++) {
+            final ItemStack[] sanitizedOptions = sanitizePatternOptions(combinedOptions.get(slot).toArray(new ItemStack[0]));
+            if (sanitizedOptions.length > 0) {
+                optionsByCombinedSlot.put(slot, sanitizedOptions);
+            }
+        }
+
+        return new PatternInputResult(combinedInputs.toArray(new ItemStack[0]), optionsByCombinedSlot);
+    }
+
+    private static boolean canMergeStacks(final ItemStack current, final ItemStack incoming) {
+        return !current.isEmpty()
+                && !incoming.isEmpty()
+                && current.isItemEqual(incoming)
+                && ItemStack.areItemStackTagsEqual(current, incoming)
+                && current.getCount() + incoming.getCount() <= current.getMaxStackSize();
+    }
+
+    private static void appendPatternOptions(final List<ItemStack> target, @Nullable final ItemStack[] source) {
+        if (source == null || source.length == 0) {
+            return;
+        }
+
+        for (final ItemStack option : source) {
+            if (option != null && !option.isEmpty()) {
+                target.add(option.copy());
+            }
+        }
+    }
+
+    private static ItemStack[] sanitizePatternOptions(@Nullable final ItemStack[] options) {
+        if (options == null || options.length == 0) {
+            return new ItemStack[0];
+        }
+
+        final List<ItemStack> sanitized = new ArrayList<>(options.length);
+        for (final ItemStack option : options) {
+            if (option != null && !option.isEmpty()) {
+                sanitized.add(option.copy());
+            }
+        }
+        return sanitized.toArray(new ItemStack[0]);
+    }
+
+    private static final class PatternInputResult {
+        private final ItemStack[] loadedInputs;
+        private final Int2ObjectMap<ItemStack[]> substituteInputs;
+
+        private PatternInputResult(final ItemStack[] loadedInputs, final Int2ObjectMap<ItemStack[]> substituteInputs) {
+            this.loadedInputs = loadedInputs;
+            this.substituteInputs = substituteInputs;
+        }
+    }
+
+    public static void applyProcessingSubstituteOptions(@Nullable ContainerPatternEncoder encoder, final Int2ObjectMap<ItemStack[]> inputs) {
+        if (encoder == null || encoder.isCraftingMode()) {
+            return;
+        }
+
+        final IItemHandler crafting = encoder.getInventoryByName("crafting");
+        if (crafting == null) {
+            return;
+        }
+
+        for (int i = 0; i < crafting.getSlots(); i++) {
+            encoder.clearProcessingSubstituteOptions(i);
+        }
+
+        for (final int index : inputs.keySet()) {
+            encoder.setProcessingSubstituteOptions(index, inputs.get(index));
         }
     }
 

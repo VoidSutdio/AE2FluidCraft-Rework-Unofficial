@@ -8,8 +8,6 @@ import com.glodblock.github.client.model.FluidPacketModel;
 import com.glodblock.github.client.model.GasPacketModel;
 import com.glodblock.github.client.model.LargeItemEncodedPatternModel;
 import com.glodblock.github.common.part.PartDualInterface;
-import com.glodblock.github.common.part.PartExtendedFluidPatternTerminal;
-import com.glodblock.github.common.part.PartFluidPatternTerminal;
 import com.glodblock.github.common.part.PartTrioInterface;
 import com.glodblock.github.interfaces.HasCustomModel;
 import com.glodblock.github.util.ModAndClassUtil;
@@ -41,8 +39,6 @@ public class ClientRegistryHandler extends RegistryHandler {
             registerModel(entry.getLeft(), entry.getRight());
         }
         AEApi.instance().registries().partModels().registerModels(PartDualInterface.MODELS);
-        AEApi.instance().registries().partModels().registerModels(PartFluidPatternTerminal.MODELS);
-        AEApi.instance().registries().partModels().registerModels(PartExtendedFluidPatternTerminal.MODELS);
     }
 
     private static void registerModel(final String key, final Item item) {

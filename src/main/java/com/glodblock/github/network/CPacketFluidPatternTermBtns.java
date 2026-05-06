@@ -1,7 +1,6 @@
 package com.glodblock.github.network;
 
 import com.glodblock.github.client.container.ContainerItemDualInterface;
-import com.glodblock.github.client.container.ContainerUltimateEncoder;
 import com.glodblock.github.client.container.ContainerWrapInterface;
 import com.glodblock.github.interfaces.FCFluidPatternContainer;
 import io.netty.buffer.ByteBuf;
@@ -63,29 +62,10 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                 final String Value = message.Value;
                 final Container c = player.openContainer;
                 if (c instanceof final FCFluidPatternContainer cpt) {
-                    if (c instanceof final ContainerUltimateEncoder cue) {
-                        switch (Name) {
-                            case "UltimateEncoder.Encode" -> {
-                                if (Value.equals("0"))
-                                    cue.encode();
-                                else cue.encodeAndMoveToInventory();
-                            }
-                            case "UltimateEncoder.Clear" -> cue.clear();
-                            case "UltimateEncoder.MultiplyByTwo" -> cue.multiply(2);
-                            case "UltimateEncoder.MultiplyByThree" -> cue.multiply(3);
-                            case "UltimateEncoder.DivideByTwo" -> cue.divide(2);
-                            case "UltimateEncoder.DivideByThree" -> cue.divide(3);
-                            case "UltimateEncoder.IncreaseByOne" -> cue.increase(1);
-                            case "UltimateEncoder.DecreaseByOne" -> cue.decrease(1);
-                            case "UltimateEncoder.Combine" -> cue.setCombineMode(Value.equals("1"));
-                            case "UltimateEncoder.Fluid" -> cue.setFluidPlaceMode(Value.equals("1"));
-                        }
-                    } else {
-                        switch (Name) {
-                            case "PatternTerminal.Combine" -> cpt.setCombineMode(Value.equals("1"));
-                            case "PatternTerminal.Fluid" -> cpt.setFluidPlaceMode(Value.equals("1"));
-                            case "PatternTerminal.Craft" -> cpt.encodeFluidCraftPattern();
-                        }
+                    switch (Name) {
+                        case "PatternTerminal.Combine" -> cpt.setCombineMode(Value.equals("1"));
+                        case "PatternTerminal.Fluid" -> cpt.setFluidPlaceMode(Value.equals("1"));
+                        case "PatternTerminal.Craft" -> cpt.encodeFluidCraftPattern();
                     }
                 } else if (c instanceof final ContainerItemDualInterface cdi) {
                     switch (Name) {

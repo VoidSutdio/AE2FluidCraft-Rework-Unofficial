@@ -49,19 +49,19 @@ public class GuiExtendedFluidPatternTerminal extends GuiExpandedProcessingPatter
     public void initGui() {
         super.initGui();
         craftingStatusBtn = Ae2ReflectClient.getCraftingStatusButton(this);
-        this.combineEnableBtn = new GuiFCImgButton(this.guiLeft + 74, this.guiTop + this.ySize - 153, "FORCE_COMBINE", "DO_COMBINE");
+        this.combineEnableBtn = new GuiFCImgButton(this.guiLeft + 79, this.guiTop + this.ySize - 123, "FORCE_COMBINE", "DO_COMBINE");
         this.combineEnableBtn.setHalfSize(true);
         this.buttonList.add(this.combineEnableBtn);
 
-        this.combineDisableBtn = new GuiFCImgButton(this.guiLeft + 74, this.guiTop + this.ySize - 153, "NOT_COMBINE", "DONT_COMBINE");
+        this.combineDisableBtn = new GuiFCImgButton(this.guiLeft + 79, this.guiTop + this.ySize - 123, "NOT_COMBINE", "DONT_COMBINE");
         this.combineDisableBtn.setHalfSize(true);
         this.buttonList.add(this.combineDisableBtn);
 
-        this.fluidEnableBtn = new GuiFCImgButton(this.guiLeft + 74, this.guiTop + this.ySize - 143, "FLUID_FIRST", "FLUID");
+        this.fluidEnableBtn = new GuiFCImgButton(this.guiLeft + 79, this.guiTop + this.ySize - 143, "FLUID_FIRST", "FLUID");
         this.fluidEnableBtn.setHalfSize(true);
         this.buttonList.add(this.fluidEnableBtn);
 
-        this.fluidDisableBtn = new GuiFCImgButton(this.guiLeft + 74, this.guiTop + this.ySize - 143, "ORIGIN_ORDER", "ITEM");
+        this.fluidDisableBtn = new GuiFCImgButton(this.guiLeft + 79, this.guiTop + this.ySize - 143, "ORIGIN_ORDER", "ITEM");
         this.fluidDisableBtn.setHalfSize(true);
         this.buttonList.add(this.fluidDisableBtn);
     }

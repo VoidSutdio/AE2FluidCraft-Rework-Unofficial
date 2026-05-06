@@ -1,7 +1,5 @@
 package com.glodblock.github.proxy;
 
-import appeng.api.util.AEColor;
-import com.glodblock.github.client.KeyBindings;
 import com.glodblock.github.client.model.DenseEncodedPatternModel;
 import com.glodblock.github.client.render.DropColourHandler;
 import com.glodblock.github.client.render.RenderIngredientBuffer;
@@ -68,12 +66,9 @@ public class ClientProxy extends CommonProxy {
                 return gas != null ? gas.getGas().getTint() | 0xFF000000 : 0xFFFFFFFF;
             }, FCGasItems.GAS_DROP, FCGasItems.GAS_PACKET);
         }
-        Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> AEColor.TRANSPARENT.getVariantByTintIndex(i), FCItems.PART_FLUID_PATTERN_TERMINAL);
-        Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> AEColor.TRANSPARENT.getVariantByTintIndex(i), FCItems.PART_EXTENDED_FLUID_PATTERN_TERMINAL);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(DenseEncodedPatternModel.PATTERN_ITEM_COLOR_HANDLER, FCItems.DENSE_ENCODED_PATTERN);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(DenseEncodedPatternModel.PATTERN_ITEM_COLOR_HANDLER, FCItems.DENSE_CRAFT_ENCODED_PATTERN);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(DenseEncodedPatternModel.PATTERN_ITEM_COLOR_HANDLER, FCItems.LARGE_ITEM_ENCODED_PATTERN);
-        KeyBindings.init();
     }
 
     @Override

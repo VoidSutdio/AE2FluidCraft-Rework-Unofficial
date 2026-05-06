@@ -12,9 +12,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<ICraftingPatternDetails> {
 
@@ -22,6 +27,7 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
     private IAEItemStack patternStackAe;
     private IAEItemStack[] inputs = null, inputsCond = null, outputs = null, outputsCond = null;
     private int priority = 0;
+    private boolean canSubstitute = false;
     private String encoderName = "";
     private String encoderID = "";
 
@@ -52,7 +58,34 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
 
     @Override
     public boolean canSubstitute() {
-        return false;
+        return this.canSubstitute;
+    }
+
+    public void setCanSubstitute(final boolean canSubstitute) {
+        this.canSubstitute = canSubstitute;
+    }
+
+    @Override
+    public List<IAEItemStack> getSubstituteInputs(final int slotIndex) {
+        if (!this.canSubstitute || this.inputs == null || slotIndex < 0 || slotIndex >= this.inputs.length) {
+            return Collections.emptyList();
+        }
+
+        final IAEItemStack input = this.inputs[slotIndex];
+        if (input == null || input.getDefinition().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Fluid patterns do not persist expanded substitute pools yet.
+        // Returning the selected input keeps substitute mode functional instead of yielding an empty pool.
+        final List<IAEItemStack> substitutes = new ArrayList<>(1);
+        substitutes.add(input.copy());
+        return substitutes;
+    }
+
+    @Override
+    public Set<IAEItemStack> getSubstituteInputsSet(final int slotIndex) {
+        return new HashSet<>(getSubstituteInputs(slotIndex));
     }
 
     @Override
@@ -170,6 +203,7 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
         //I have to keep both to maintain the back capacity.
         tag.setTag("in", writeStackArray(checkInitialized(inputs)));
         tag.setTag("out", writeStackArray(checkInitialized(outputs)));
+        tag.setBoolean("substitute", this.canSubstitute);
         //encoder info
         if (!this.encoderName.isEmpty()) {
             tag.setString("encoderName", this.encoderName);
@@ -200,8 +234,9 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
             return false;
         }
         final NBTTagCompound tag = Objects.requireNonNull(patternStack.getTagCompound());
+        this.canSubstitute = tag.getBoolean("substitute");
         this.encoderName = tag.getString("encoderName");
-        this.encoderName = tag.getString("encoderID");
+        this.encoderID = tag.getString("encoderID");
         // may be possible to enter a partially-correct state if setInputs succeeds but setOutputs failed
         // but outside code should treat it as completely incorrect and not attempt to make calls
         return setInputs(readStackArray(tag.getTagList("Inputs", Constants.NBT.TAG_COMPOUND), 100))

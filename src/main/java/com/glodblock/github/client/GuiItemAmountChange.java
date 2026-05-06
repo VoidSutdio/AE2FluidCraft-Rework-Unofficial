@@ -4,17 +4,10 @@ import appeng.api.storage.ITerminalHost;
 import appeng.client.gui.MathExpressionParser;
 import appeng.client.gui.implementations.GuiCraftAmount;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.container.AEBaseContainer;
 import appeng.core.sync.GuiBridge;
-import appeng.helpers.WirelessTerminalGuiObject;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.container.ContainerItemAmountChange;
-import com.glodblock.github.common.part.PartExtendedFluidPatternTerminal;
-import com.glodblock.github.common.part.PartFluidPatternTerminal;
-import com.glodblock.github.common.tile.TileUltimateEncoder;
 import com.glodblock.github.inventory.GuiType;
-import com.glodblock.github.loader.FCBlocks;
-import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.network.CPacketPatternValueSet;
 import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.util.Ae2ReflectClient;
@@ -23,7 +16,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 
 import java.io.IOException;
 
@@ -51,38 +43,9 @@ public class GuiItemAmountChange extends GuiCraftAmount {
     @Override
     public void initGui() {
         super.initGui();
-        ItemStack myIcon = null;
-        final Object target = ((AEBaseContainer) this.inventorySlots).getTarget();
         this.originalGuiBtn = Ae2ReflectClient.getGuiCraftAmountBackButton(this);
         this.originalGuiB = Ae2ReflectClient.getGuiCraftAmountOriginalGui(this);
         this.buttonList.remove(this.originalGuiBtn);
-
-        if (target instanceof WirelessTerminalGuiObject) {
-            final ItemStack tool = ((WirelessTerminalGuiObject) target).getItemStack();
-            if (tool.getItem() == FCItems.WIRELESS_FLUID_PATTERN_TERMINAL) {
-                myIcon = new ItemStack(FCItems.WIRELESS_FLUID_PATTERN_TERMINAL);
-                this.originalGui = GuiType.WIRELESS_FLUID_PATTERN_TERMINAL;
-            }
-        }
-
-        if (target instanceof PartFluidPatternTerminal) {
-            myIcon = new ItemStack(FCItems.PART_FLUID_PATTERN_TERMINAL);
-            this.originalGui = GuiType.FLUID_PATTERN_TERMINAL;
-        }
-
-        if (target instanceof PartExtendedFluidPatternTerminal) {
-            myIcon = new ItemStack(FCItems.PART_EXTENDED_FLUID_PATTERN_TERMINAL);
-            this.originalGui = GuiType.FLUID_EXTENDED_PATTERN_TERMINAL;
-        }
-
-        if (target instanceof TileUltimateEncoder) {
-            myIcon = new ItemStack(FCBlocks.ULTIMATE_ENCODER);
-            this.originalGui = GuiType.ULTIMATE_ENCODER;
-        }
-
-        if (this.originalGui != null && myIcon != null) {
-            this.buttonList.add(this.originalGuiBtn = new GuiTabButton(this.guiLeft + 154, this.guiTop, myIcon, myIcon.getDisplayName(), this.itemRender));
-        }
 
         next = Ae2ReflectClient.getGuiCraftAmountNextButton(this);
         amountToCraft = Ae2ReflectClient.getGuiCraftAmountTextBox(this);
